@@ -14,6 +14,7 @@ const resolvers = {
 
   Mutation: {
     login: async (parent, { email, password }) => {
+      console.log("<============inside login============>");
       const user = await User.findOne({ email });
 
       if (!user) {
@@ -35,20 +36,27 @@ const resolvers = {
       const token = signToken(user);
       return { token, user };
     },
-    saveBook: async (parent, { input }, context) => {
+    saveBook: async (parent, args, context) => {
       if (context.user) {
+        console.log("<============inside savebook============>");
+        console.log("context.user._id:", context.user._id);
+        console.log("args:", args);
+
         const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },
-          { $addToSet: { savedBooks: input } },
+          { $addToSet: { savedBooks: args.aBook } },
           { new: true, runValidators: true }
         );
+
+        console.log("updatedUser:", updatedUser);
+
         return updatedUser;
       }
       throw new AuthenticationError("You need to be logged in!");
     },
     removeBook: async (parent, args, context) => {
       if (context.user) {
-        const updatedUser = Profile.findOneAndUpdate(
+        const updatedUser = await User.findOneAndUpdate(
           { _id: context.user._id },
           { $pull: { savedBooks: { bookId: args.bookId } } },
           { new: true }

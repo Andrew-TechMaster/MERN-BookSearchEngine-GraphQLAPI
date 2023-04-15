@@ -2,19 +2,21 @@ import React, { useEffect, useState } from "react";
 import { Button, Card, Col, Container, Row } from "react-bootstrap";
 
 import { useMutation, useQuery } from "@apollo/client";
-import { deleteBook, getMe } from "../utils/API";
+// import { deleteBook, getMe } from "../utils/API";
 import Auth from "../utils/auth";
 import { removeBookId } from "../utils/localStorage";
 import { REMOVE_BOOK } from "../utils/mutations";
 import { GET_ME } from "../utils/queries";
 
 const SavedBooks = () => {
+  /*
   const [userData, setUserData] = useState({});
+  */
+
   // Use the Apollo useQuery() Hook to execute the GET_ME query
   const { loading, data } = useQuery(GET_ME);
-  if (data) {
-    setUserData(data.me);
-  }
+  const userData = data?.me || {};
+
   // Use the Apollo useMutation() Hook to execute the SAVE_BOOK mutation
   const [removeBook, { error }] = useMutation(REMOVE_BOOK);
 
@@ -69,11 +71,11 @@ const SavedBooks = () => {
       const updatedUser = await response.json();
       */
 
-      const { data } = await removeBook({
+      const updateddata = await removeBook({
         variables: { bookId },
       });
 
-      setUserData(data.User);
+      userData = updateddata.user;
       // upon success, remove book's id from localStorage
       removeBookId(bookId);
     } catch (err) {
@@ -102,7 +104,7 @@ const SavedBooks = () => {
       <Container>
         <h2 className="pt-5">
           {userData.savedBooks.length
-            ? `Viewing ${userData.savedBooks.length} saved ${
+            ? `Viewing ${userData.savedBooks?.length} saved ${
                 userData.savedBooks.length === 1 ? "book" : "books"
               }:`
             : "You have no saved books!"}
