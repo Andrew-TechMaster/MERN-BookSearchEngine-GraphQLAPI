@@ -18,6 +18,7 @@ const SignupForm = () => {
   const [validated] = useState(false);
   // set state for alert
   const [showAlert, setShowAlert] = useState(false);
+  // Use the Apollo useMutation() Hook to execute the ADD_USER mutation
   const [addUser, { error, data }] = useMutation(ADD_USER);
 
   const handleInputChange = (event) => {
